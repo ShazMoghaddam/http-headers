@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTTP Headers, Decoded</title>
+<meta name="description" content="A searchable field guide to the HTTP headers browsers and servers exchange, grouped by role with a plain-English gloss on each one.">
+<link rel="canonical" href="https://shazmoghaddam.github.io/http-headers/">
+<meta property="og:title" content="HTTP Headers, Decoded">
+<meta property="og:description" content="A searchable field guide to 61+ HTTP headers, from Content-Type and Cache-Control to CORS and the security set. Plain-English on every one.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://shazmoghaddam.github.io/http-headers/">
+<meta property="og:image" content="https://shazmoghaddam.github.io/http-headers/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="HTTP Status Codes, Decoded">
+<meta name="twitter:description" content="A searchable field guide to every HTTP status code, grouped by class with a plain-English gloss on each one.">
+<meta name="twitter:image" content="https://shazmoghaddam.github.io/http-headers/preview.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Newsreader:ital,opsz,wght@1,6..72,400;0,6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EFEFE9;
+    --paper-2:#F6F6F1;
+    --ink:#17181C;
+    --ink-soft:#4A4C54;
+    --ink-faint:#83868F;
+    --line:#D9D9D0;
+    --line-2:#E6E6DE;
+    --accent:#4338E8;
+    --accent-soft:#EDECFB;
+    --shadow:0 1px 0 rgba(23,24,28,.04), 0 8px 24px -18px rgba(23,24,28,.35);
+    --r:14px;
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Space Grotesk",system-ui,sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  a{color:inherit}
+
+  .wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+
+  /* ---------- HERO ---------- */
+  header{
+    padding:64px 0 30px;
+    border-bottom:1px solid var(--line);
+    background:
+      radial-gradient(120% 90% at 100% 0%, rgba(67,56,232,.06), transparent 60%),
+      var(--paper);
+  }
+  .eyebrow{
+    font-family:"Space Mono",monospace;
+    font-size:12px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin:0 0 18px;
+  }
+  h1{
+    font-weight:700;
+    font-size:clamp(2.6rem,7vw,5rem);
+    line-height:.98;
+    letter-spacing:-.03em;
+    margin:0;
+  }
+  h1 .slash{color:var(--accent)}
+  .lede{
+    max-width:52ch;
+    margin:22px 0 0;
+    font-size:clamp(1rem,2.2vw,1.18rem);
+    color:var(--ink-soft);
+    line-height:1.55;
+  }
+  .lede-count{color:var(--ink);font-weight:600;white-space:nowrap}
+
+  /* decoder demo */
+  .decoder{
+    margin-top:30px;
+    display:inline-flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+    padding:14px 18px;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:999px;
+    box-shadow:var(--shadow);
+    min-height:58px;
+  }
+  .decoder .tok{
+    font-family:"Space Mono",monospace;
+    font-weight:700;
+    font-size:1.05rem;
+    letter-spacing:.02em;
+    background:var(--ink);
+    color:var(--paper-2);
+    padding:6px 12px;
+    border-radius:8px;
+    white-space:nowrap;
+  }
+  .decoder .arrow{color:var(--accent);font-weight:700}
+  .decoder .exp{
+    font-family:"Newsreader",Georgia,serif;
+    font-style:italic;
+    font-size:1.12rem;
+    color:var(--ink);
+  }
+  .decoder.swap .tok,.decoder.swap .exp{opacity:0}
+  .decoder .tok,.decoder .exp{transition:opacity .28s ease}
+
+  /* ---------- CONTROLS ---------- */
+  .controls{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    padding:16px 0;
+  }
+  .search{
+    position:relative;
+    display:flex;
+    align-items:center;
+  }
+  .search svg{position:absolute;left:16px;width:18px;height:18px;stroke:var(--ink-faint);pointer-events:none}
+  #q{
+    width:100%;
+    font-family:"Space Grotesk",sans-serif;
+    font-size:1rem;
+    color:var(--ink);
+    padding:14px 16px 14px 44px;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:12px;
+    outline:none;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  #q::placeholder{color:var(--ink-faint)}
+  #q:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+
+  .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:12px;
+  }
+  .chip{
+    flex:0 0 auto;
+    font-family:"Space Grotesk",sans-serif;
+    font-size:.86rem;
+    font-weight:500;
+    color:var(--ink-soft);
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:7px 14px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    white-space:nowrap;
+    transition:background .15s,color .15s,border-color .15s;
+  }
+  .chip .cdot{width:8px;height:8px;border-radius:50%;background:var(--c,var(--accent))}
+  .chip .star{width:12px;height:12px;fill:var(--accent);flex:0 0 auto}
+  .chip[aria-pressed="true"] .star{fill:currentColor}
+  .chip:hover{border-color:var(--ink-faint)}
+  .chip[aria-pressed="true"]{
+    background:var(--ink);
+    color:var(--paper-2);
+    border-color:var(--ink);
+  }
+  .chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  /* ---------- SECTIONS ---------- */
+  main{padding:14px 0 40px}
+  .count{
+    font-family:"Space Mono",monospace;
+    font-size:12.5px;
+    letter-spacing:.02em;
+    color:var(--ink-faint);
+    padding:20px 0 4px;
+  }
+  .cat{padding:26px 0 6px;scroll-margin-top:150px}
+  .cat-head{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    margin:0 0 18px;
+    padding-bottom:12px;
+    border-bottom:1px solid var(--line-2);
+  }
+  .cat-head .dot{width:11px;height:11px;border-radius:50%;background:var(--c);transform:translateY(1px)}
+  .cat-head h2{
+    font-size:clamp(1.25rem,3vw,1.6rem);
+    font-weight:600;
+    letter-spacing:-.02em;
+    margin:0;
+  }
+  .cat-head .n{
+    font-family:"Space Mono",monospace;
+    font-size:12px;
+    color:var(--ink-faint);
+    margin-left:auto;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(288px,1fr));
+    gap:10px;
+  }
+  .entry{
+    background:var(--paper-2);
+    border:1px solid var(--line-2);
+    border-radius:var(--r);
+    padding:15px 16px 16px;
+    transition:border-color .15s, transform .15s, box-shadow .15s;
+  }
+  .entry:hover{
+    border-color:color-mix(in srgb,var(--c) 55%, var(--line));
+    box-shadow:var(--shadow);
+    transform:translateY(-1px);
+  }
+  .entry .term{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    margin-bottom:8px;
+  }
+  .entry .cdot{width:7px;height:7px;border-radius:50%;background:var(--c);flex:0 0 auto}
+  .entry .ac{
+    font-family:"Space Mono",monospace;
+    font-weight:700;
+    font-size:1.02rem;
+    letter-spacing:.01em;
+    color:var(--ink);
+    word-break:break-word;
+  }
+  .entry .mean{
+    font-weight:500;
+    font-size:.95rem;
+    color:var(--ink);
+    margin:0 0 4px;
+  }
+  .entry .exp{
+    font-family:"Newsreader",Georgia,serif;
+    font-style:italic;
+    font-size:.98rem;
+    line-height:1.4;
+    color:var(--ink-soft);
+    margin:0;
+  }
+  mark{background:var(--accent-soft);color:var(--accent);border-radius:3px;padding:0 1px}
+
+  .noresults{
+    display:none;
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-faint);
+  }
+  .noresults .big{font-family:"Space Mono",monospace;font-size:1.1rem;color:var(--ink-soft);margin-bottom:6px}
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    border-top:1px solid var(--line);
+    padding:34px 0 46px;
+    margin-top:20px;
+  }
+  .foot{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+  }
+  .foot .by{font-size:.95rem;color:var(--ink-soft)}
+  .foot .by b{color:var(--ink);font-weight:600}
+  .foot nav{display:flex;gap:8px;flex-wrap:wrap}
+  .foot a{
+    font-family:"Space Mono",monospace;
+    font-size:.8rem;
+    text-decoration:none;
+    color:var(--ink-soft);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:7px 13px;
+    transition:border-color .15s,color .15s;
+  }
+  .foot a:hover{color:var(--accent);border-color:var(--accent)}
+
+  /* keyboard hint in search */
+  .kbd{
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%);
+    font-family:"Space Mono",monospace;
+    font-size:12px;
+    color:var(--ink-faint);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:2px 7px;
+    background:var(--paper);
+    pointer-events:none;
+    transition:opacity .15s;
+  }
+  #q:focus ~ .kbd{opacity:0}
+
+  /* back to top */
+  .totop{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--ink);
+    color:var(--paper-2);
+    display:grid;
+    place-items:center;
+    cursor:pointer;
+    opacity:0;
+    transform:translateY(10px);
+    pointer-events:none;
+    transition:opacity .2s, transform .2s;
+    box-shadow:var(--shadow);
+    z-index:40;
+  }
+  .totop.show{opacity:1;transform:none;pointer-events:auto}
+  .totop:hover{background:var(--accent)}
+  .totop svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .totop:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  @media (max-width:560px){.kbd{display:none}}
+
+  /* hero action buttons */
+  .actions{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap}
+  .btn{
+    font-family:"Space Grotesk",sans-serif;
+    font-size:.92rem;font-weight:500;
+    display:inline-flex;align-items:center;gap:8px;
+    cursor:pointer;
+    padding:11px 16px;border-radius:10px;
+    border:1px solid var(--line);
+    background:var(--paper-2);color:var(--ink);
+    transition:border-color .15s,background .15s,color .15s;
+  }
+  .btn:hover{border-color:var(--ink-faint)}
+  .btn.primary{background:var(--ink);color:var(--paper-2);border-color:var(--ink)}
+  .btn.primary:hover{background:var(--accent);border-color:var(--accent)}
+  .btn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  /* copied toast */
+  .toast{
+    position:fixed;left:50%;bottom:26px;
+    transform:translate(-50%,20px);
+    background:var(--ink);color:var(--paper-2);
+    font-family:"Space Mono",monospace;font-size:.82rem;
+    padding:10px 16px;border-radius:999px;
+    opacity:0;pointer-events:none;
+    transition:opacity .2s,transform .2s;z-index:60;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  /* print / save-as-PDF layout */
+  @media print{
+    .controls,.totop,.actions,.toast,.decoder,.eyebrow{display:none!important}
+    header{border:none;padding:8px 0 10px;background:none}
+    h1{font-size:2.4rem}
+    .cat{padding:14px 0 2px}
+    .grid{grid-template-columns:repeat(2,1fr);gap:6px}
+    .entry{break-inside:avoid;border:1px solid #ddd;box-shadow:none;background:none;padding:8px 10px}
+    .entry:hover{transform:none;box-shadow:none}
+    body{background:#fff}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+
+  @media (max-width:560px){
+    header{padding:44px 0 24px}
+    .decoder{width:100%;border-radius:14px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important}
+  }
+</style>
+<style>
+  /* Header names are long; size the term down and break on hyphens cleanly */
+  .entry .ac{ font-size:.92rem; line-height:1.28; overflow-wrap:anywhere; }
+  .decoder .tok{ font-size:1.05rem; }
+  .chips .chip{ white-space:nowrap; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p class="eyebrow">A field guide</p>
+    <h1>HTTP headers,<br>decoded<span class="slash">.</span></h1>
+    <p class="lede">The metadata browsers and servers attach to every request and response, gathered in one place: <strong class="lede-count" id="heroCount">61 headers across 7 classes</strong>, each with a plain-English gloss. Search it, skim it, bookmark it.</p>
+    <div class="decoder" id="decoder" aria-live="polite">
+      <span class="tok" id="dTok">Cache-Control</span>
+      <span class="arrow">&#8594;</span>
+      <span class="exp" id="dExp">how long to cache this</span>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="shareBtn" type="button">
+        <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+        Share
+      </button>
+      <button class="btn" id="pdfBtn" type="button">
+        <svg viewBox="0 0 24 24"><path d="M12 3v12M8 11l4 4 4-4M4 19h16"/></svg>
+        Save as PDF
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="wrap">
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" type="search" placeholder="Search headers &#8212; try 'cache', 'cookie', 'CORS'&#8230;" autocomplete="off" aria-label="Search HTTP headers">
+      <span class="kbd" aria-hidden="true">/</span>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+</div>
+
+<main>
+  <div class="wrap">
+    <p class="count" id="count"></p>
+    <div id="sections"></div>
+    <div class="noresults" id="noresults">
+      <div class="big">No matches</div>
+      <div>Nothing here for that one. Try a shorter word, a code number, or a different class.</div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div class="by">Compiled by <b>Shaz Moghaddam</b> &#183; Data Scientist &amp; Python Developer, London</div>
+    <nav>
+      <a href="https://shazmoghaddam.github.io" target="_blank" rel="noopener">Portfolio</a>
+      <a href="https://linkedin.com/in/shazmoghaddam" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://github.com/ShazMoghaddam" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite">Link copied</div>
+
+<button class="totop" id="totop" aria-label="Back to top" title="Back to top">
+  <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<script>
+const DATA = [
+  { id:"request", name:"Request headers", short:"Request", c:"#2563EB", items:[
+    ["Host","Target host","Names the domain (and port) the request is meant for, the one required header in HTTP/1.1"],
+    ["User-Agent","Client identity","Describes the browser, app or bot making the request, plus its version and platform"],
+    ["Accept","Wanted formats","Tells the server which content types the client can handle, for example JSON or HTML"],
+    ["Accept-Encoding","Wanted compression","Lists the compression the client understands, such as gzip or br, so responses can be smaller"],
+    ["Accept-Language","Wanted languages","Signals the human languages the client prefers, so the server can localise the response"],
+    ["Authorization","Credentials","Carries the client's credentials, such as a Bearer token or Basic login, to prove who it is"],
+    ["Cookie","Stored cookies","Sends the cookies the server set earlier back to it, usually to keep the user logged in"],
+    ["Referer","Where you came from","Names the page that linked to this request, misspelled in the spec and kept that way ever since"],
+    ["Origin","Requesting site","Names the scheme and host the request came from, used heavily by CORS and CSRF checks"],
+    ["Connection","Keep-alive control","Says whether the connection should stay open for more requests or close after this one"],
+    ["Upgrade-Insecure-Requests","Prefer HTTPS","Signals the client would rather be served secure HTTPS versions of a page's resources"],
+    ["DNT","Do Not Track","Deprecated. Once asked sites not to track the user, but it was widely ignored and is being removed"],
+  ]},
+  { id:"response", name:"Response headers", short:"Response", c:"#16A34A", items:[
+    ["Server","Server software","Names the software handling the request, such as nginx or Apache, sometimes with a version"],
+    ["Date","When it was sent","The date and time the server generated the response, in GMT"],
+    ["Location","Redirect target","Points the client to another URL, used with 3xx redirects and after creating a resource"],
+    ["Set-Cookie","Store a cookie","Tells the browser to save a cookie, with options for expiry, scope and security flags"],
+    ["Retry-After","Try again later","Tells the client how long to wait before retrying, common with 429 and 503 responses"],
+    ["Allow","Permitted methods","Lists the HTTP methods a resource supports, sent with a 405 Method Not Allowed"],
+    ["WWW-Authenticate","How to log in","Sent with a 401 to tell the client which authentication scheme and realm to use"],
+  ]},
+  { id:"content", name:"Content & encoding", short:"Content", c:"#D97706", items:[
+    ["Content-Type","Body format","Declares the media type of the body, such as application/json or text/html, plus its charset"],
+    ["Content-Length","Body size","The size of the body in bytes, so the other side knows how much to read"],
+    ["Content-Encoding","Applied compression","Names any compression applied to the body, such as gzip, so the client can undo it"],
+    ["Content-Language","Body language","States the human language of the body, useful when the same URL serves several languages"],
+    ["Content-Location","Where it lives","Points to the specific URL of the returned content when it differs from the requested one"],
+    ["Content-Disposition","Inline or download","Says whether to show the body in the page or download it, and can suggest a filename"],
+    ["Content-Range","Which bytes","States which part of the whole a partial response covers, used with 206 Partial Content"],
+  ]},
+  { id:"caching", name:"Caching", short:"Caching", c:"#0891B2", items:[
+    ["Cache-Control","Caching rules","The main caching header, setting how and how long a response may be stored and reused"],
+    ["Expires","Expiry date","An older way to give a hard expiry date for a cached copy, overridden by Cache-Control"],
+    ["ETag","Version fingerprint","A short id for this version of a resource, so the client can ask if it has changed"],
+    ["Last-Modified","Last change time","The time the resource last changed, a coarser way to check freshness than an ETag"],
+    ["Age","Time in cache","How many seconds the response has already been sitting in a cache before reaching you"],
+    ["Vary","Cache-by headers","Names the request headers a cached response depends on, so caches key on them correctly"],
+    ["Pragma","Legacy no-cache","An HTTP/1.0 leftover, only really used as Pragma: no-cache for old clients"],
+  ]},
+  { id:"conditional", name:"Conditional & range", short:"Conditional", c:"#7C3AED", items:[
+    ["If-Match","Only if same version","Runs the request only if the resource's ETag matches, guarding against lost updates"],
+    ["If-None-Match","Only if changed","Runs the request only if the ETag does not match, the basis of efficient cache revalidation"],
+    ["If-Modified-Since","Only if newer","Asks for the resource only if it changed after a given time, otherwise a 304 is returned"],
+    ["If-Unmodified-Since","Only if untouched","Runs the request only if the resource has not changed since a given time"],
+    ["Range","Ask for part","Requests only a portion of a resource, used for resumable downloads and media seeking"],
+    ["If-Range","Range if unchanged","Sends the range only if the resource is unchanged, otherwise asks for the whole thing"],
+    ["Accept-Ranges","Range support","The server's way of advertising that it accepts range requests, usually 'bytes'"],
+  ]},
+  { id:"cors", name:"CORS", short:"CORS", c:"#DB2777", items:[
+    ["Access-Control-Allow-Origin","Who may read","Names the origins allowed to read the response, the core of cross-origin sharing"],
+    ["Access-Control-Allow-Methods","Allowed methods","Lists the HTTP methods permitted on a cross-origin request, sent in the preflight reply"],
+    ["Access-Control-Allow-Headers","Allowed headers","Lists the request headers the client may send cross-origin, answered during preflight"],
+    ["Access-Control-Allow-Credentials","Cookies allowed","Says whether the browser may send cookies and auth on a cross-origin request"],
+    ["Access-Control-Expose-Headers","Readable headers","Names which response headers JavaScript is allowed to read across origins"],
+    ["Access-Control-Max-Age","Cache preflight","How long the browser may cache a preflight result before asking again"],
+    ["Access-Control-Request-Method","Preflight method","Sent by the browser during preflight to ask if a given method will be allowed"],
+    ["Access-Control-Request-Headers","Preflight headers","Sent by the browser during preflight to ask which custom headers will be allowed"],
+  ]},
+  { id:"security", name:"Security", short:"Security", c:"#DC2626", items:[
+    ["Strict-Transport-Security","Force HTTPS","Tells browsers to only reach the site over HTTPS for a set time, known as HSTS"],
+    ["Content-Security-Policy","Allowed sources","Controls which scripts, styles and other resources may load, the strongest defence against XSS"],
+    ["X-Content-Type-Options","No MIME sniffing","Set to nosniff, it stops browsers guessing a body's type and running it as something unsafe"],
+    ["X-Frame-Options","Anti-clickjacking","Controls whether the page may be shown in a frame, guarding against clickjacking"],
+    ["Referrer-Policy","Referrer control","Decides how much of the referring URL is shared when the user follows a link"],
+    ["Permissions-Policy","Feature gating","Turns browser features like camera, mic and geolocation on or off per site, replaces Feature-Policy"],
+    ["Cross-Origin-Opener-Policy","Isolate the tab","Cuts a page off from windows it opens, part of enabling cross-origin isolation (COOP)"],
+    ["Cross-Origin-Embedder-Policy","Vet embeds","Requires cross-origin resources to opt in before loading, the other half of isolation (COEP)"],
+    ["Cross-Origin-Resource-Policy","Who may embed","Limits which origins are allowed to embed a resource at all (CORP)"],
+    ["Clear-Site-Data","Wipe stored data","Tells the browser to clear cookies, storage and caches for the site, handy on logout"],
+    ["X-XSS-Protection","Legacy XSS filter","Deprecated. An old browser XSS filter that could add risks, replaced by Content-Security-Policy"],
+    ["Expect-CT","Certificate transparency","Deprecated. Enforced Certificate Transparency, now on by default so the header is obsolete"],
+    ["Public-Key-Pins","Certificate pinning","Deprecated. Pinned a site to specific certificates, removed for being fragile and dangerous (HPKP)"],
+  ]},
+];
+
+const $ = s => document.querySelector(s);
+const sectionsEl = $("#sections");
+const countEl = $("#count");
+const noresults = $("#noresults");
+let activeCat = "all";
+let query = "";
+
+// total
+const TOTAL = DATA.reduce((n,c)=>n+c.items.length,0);
+$("#q").placeholder = `Search ${TOTAL} headers \u2014 try 'cache', 'cookie', 'CORS'\u2026`;
+const heroCount = $("#heroCount");
+if(heroCount) heroCount.textContent = `${TOTAL} headers across ${DATA.length} classes`;
+
+// build chips
+const chips = $("#chips");
+const allChip = document.createElement("button");
+allChip.className="chip"; allChip.textContent="All"; allChip.dataset.cat="all";
+allChip.setAttribute("aria-pressed","true");
+chips.appendChild(allChip);
+const ivChip=document.createElement("button");
+ivChip.className="chip chip-star"; ivChip.dataset.cat="essentials";
+ivChip.setAttribute("aria-pressed","false");
+ivChip.innerHTML=`<svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 20.5l1.4-6.8L2.2 9l6.9-.7z"/></svg>Essential headers`;
+chips.appendChild(ivChip);
+DATA.forEach(cat=>{
+  const b=document.createElement("button");
+  b.className="chip"; b.dataset.cat=cat.id; b.style.setProperty("--c",cat.c);
+  b.setAttribute("aria-pressed","false");
+  b.innerHTML=`<span class="cdot"></span>${cat.short || cat.name}`;
+  chips.appendChild(b);
+});
+
+function escapeHtml(s){return s.replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]));}
+function escapeRx(s){return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");}
+function highlight(text,q){
+  const e=escapeHtml(text);
+  if(!q) return e;
+  try{ return e.replace(new RegExp("("+escapeRx(q)+")","ig"),"<mark>$1</mark>"); }
+  catch(_){ return e; }
+}
+
+// build sections
+const SECTIONS = DATA.map(cat=>{
+  const sec=document.createElement("section");
+  sec.className="cat"; sec.id="sec-"+cat.id; sec.style.setProperty("--c",cat.c);
+  sec.dataset.cat=cat.id;
+  const head=document.createElement("div");
+  head.className="cat-head";
+  head.innerHTML=`<span class="dot"></span><h2>${escapeHtml(cat.name)}</h2><span class="n">${cat.items.length}</span>`;
+  const nEl=head.querySelector(".n");
+  const grid=document.createElement("div");
+  grid.className="grid";
+  const entries=cat.items.map(([ac,mean,exp])=>{
+    const el=document.createElement("article");
+    el.className="entry";
+    el.innerHTML=`<div class="term"><span class="cdot"></span><span class="ac"></span></div><p class="mean"></p><p class="exp"></p>`;
+    const acEl=el.querySelector(".ac"), meanEl=el.querySelector(".mean"), expEl=el.querySelector(".exp");
+    acEl.textContent=ac; meanEl.textContent=mean; expEl.textContent=exp;
+    grid.appendChild(el);
+    return {el, ac, mean, exp, blob:(ac+" "+mean+" "+exp).toLowerCase(), acEl, meanEl, expEl, hot:false};
+  });
+  sec.appendChild(head); sec.appendChild(grid);
+  sectionsEl.appendChild(sec);
+  return {catId:cat.id, sec, nEl, entries};
+});
+
+// filtering + highlighting
+function apply(){
+  const q=query.trim().toLowerCase();
+  let shown=0;
+  const essMode = activeCat==="essentials";
+  SECTIONS.forEach(s=>{
+    let vis=0;
+    s.entries.forEach(en=>{
+      let inScope;
+      if(essMode){
+        inScope = ESSENTIALS.has(en.ac);
+      } else {
+        inScope = activeCat==="all" || activeCat===s.catId;
+      }
+      const match = inScope && (q==="" || en.blob.includes(q));
+      en.el.style.display = match ? "" : "none";
+      if(match){ vis++; shown++; }
+      if(q && match){
+        en.acEl.innerHTML=highlight(en.ac,q);
+        en.meanEl.innerHTML=highlight(en.mean,q);
+        en.expEl.innerHTML=highlight(en.exp,q);
+        en.hot=true;
+      } else if(en.hot && !q){
+        en.acEl.textContent=en.ac;
+        en.meanEl.textContent=en.mean;
+        en.expEl.textContent=en.exp;
+        en.hot=false;
+      }
+    });
+    s.sec.style.display = vis ? "" : "none";
+    s.nEl.textContent = vis;
+  });
+  noresults.style.display = shown ? "none" : "block";
+  const filtering = q || activeCat!=="all";
+  countEl.textContent = filtering ? `Showing ${shown} of ${TOTAL} headers` : "";
+  countEl.style.display = filtering ? "" : "none";
+}
+
+const qEl=$("#q");
+qEl.addEventListener("input",e=>{query=e.target.value;apply();});
+
+// category selection with shareable URL hash (e.g. #client)
+const CAT_IDS = DATA.map(d=>d.id);
+const ESSENTIALS = new Set(["Content-Type", "Cache-Control", "Authorization", "Cookie", "Set-Cookie", "Accept", "User-Agent", "Content-Length", "Location", "ETag", "Vary", "Access-Control-Allow-Origin", "Strict-Transport-Security", "Content-Security-Policy", "X-Frame-Options", "X-Content-Type-Options", "Referrer-Policy"]);
+function selectCat(catId, scroll){
+  activeCat = (catId==="essentials" || CAT_IDS.includes(catId)) ? catId : "all";
+  chips.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed", c.dataset.cat===activeCat?"true":"false"));
+  apply();
+  if(scroll){
+    window.scrollTo({top: document.querySelector(".controls").offsetTop-1, behavior:"smooth"});
+  }
+}
+chips.addEventListener("click",e=>{
+  const btn=e.target.closest(".chip"); if(!btn) return;
+  const cat=btn.dataset.cat;
+  selectCat(cat, true);
+  try{ history.replaceState(null,"", cat==="all" ? location.pathname+location.search : "#"+cat); }catch(_){}
+});
+window.addEventListener("hashchange",()=>selectCat(location.hash.slice(1)||"all", false));
+try{ selectCat(location.hash.slice(1)||"all", false); }catch(_){ selectCat("all", false); }
+
+// keyboard: "/" focuses search, Esc clears it
+document.addEventListener("keydown",e=>{
+  const typing=/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+  if(e.key==="/" && !typing){ e.preventDefault(); qEl.focus(); }
+  else if(e.key==="Escape" && document.activeElement===qEl){ qEl.value=""; query=""; apply(); qEl.blur(); }
+});
+
+// back to top
+const totop=$("#totop");
+window.addEventListener("scroll",()=>totop.classList.toggle("show", window.scrollY>600),{passive:true});
+totop.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}));
+
+// share + save as PDF
+const toast=$("#toast");
+let toastT;
+function flash(msg){ toast.textContent=msg; toast.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>toast.classList.remove("show"),1800); }
+$("#shareBtn").addEventListener("click",async()=>{
+  const data={title:"HTTP Status Codes, Decoded", text:"A searchable field guide to every HTTP status code.", url:location.href};
+  if(navigator.share){ try{ await navigator.share(data); }catch(_){} return; }
+  try{ await navigator.clipboard.writeText(location.href); flash("Link copied"); }
+  catch(_){ window.open("https://www.linkedin.com/sharing/share-offsite/?url="+encodeURIComponent(location.href),"_blank","noopener"); }
+});
+function resetForFullView(){ if(query||activeCat!=="all"){ qEl.value=""; query=""; selectCat("all",false); } }
+$("#pdfBtn").addEventListener("click",()=>{ resetForFullView(); window.print(); });
+window.addEventListener("beforeprint",resetForFullView);
+
+// hero decoder cycle
+const demo=[
+  ["Content-Type","the body's format"],
+  ["Set-Cookie","store a cookie"],
+  ["Authorization","who you are"],
+  ["ETag","version fingerprint"],
+  ["Location","where to go next"],
+  ["Access-Control-Allow-Origin","who may read this"],
+  ["Strict-Transport-Security","HTTPS only, no exceptions"]
+];
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if(!reduce){
+  const dec=$("#decoder"), tok=$("#dTok"), exp=$("#dExp");
+  let i=0;
+  setInterval(()=>{
+    dec.classList.add("swap");
+    setTimeout(()=>{
+      i=(i+1)%demo.length;
+      tok.textContent=demo[i][0];
+      exp.textContent=demo[i][1];
+      dec.classList.remove("swap");
+    },300);
+  },2800);
+}
+</script>
+</body>
+</html>
